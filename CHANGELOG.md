@@ -1,5 +1,274 @@
 # 更新日志（Changelog）
 
+## v3.0.0
+
+### 2026/8/7
+
+> [!IMPORTANT]
+> 1. 本版本运行环境升级至 Python 3.14。
+> 2. 新增 PySide6 桌面版，适用于 Windows 和 macOS。
+> 3. 旧版 Tkinter 界面已弃用，目前仅临时保留兼容。
+> 4. 部分配置项和默认值发生变化，升级后请检查 `config/config.ini`。
+
+### 🌟 新桌面版
+
+- 提供更新仪表盘，可查看更新进度、运行状态和结果统计。
+- 提供频道管理，可进行分类、搜索、播放、重新测速和批量操作。
+- 提供数据源管理，可维护订阅源、EPG、本地源、白名单、黑名单和频道别名。
+- 支持频道模板、播放源和诊断信息的导入导出。
+- 支持批量导入本地源文件，并在写入前预览、筛选重复项和无效项。
+- 支持播放截图预览和批量刷新，可选在更新过程中自动获取截图。
+- 支持在浏览器或配置的外部播放器中打开频道。
+- 提供 RTMP 推流监控和控制。
+- 提供任务历史、运行日志、日志导出和更新日志查看。
+- 支持中英文界面和系统托盘运行。
+
+### 🚀 新增功能
+
+1. 新增 `performance_mode`，支持自动、节能、均衡和快速模式。
+2. 新增 `speed_test_mode`，支持快速测速、全量测速和手动测速。
+3. 新增 `output_urls_limit`，用于控制每个频道最终导出的接口数量。
+4. 新增快速测速目标配置，可在达到目标结果后提前结束该频道的测速。
+5. 新增播放截图配置：`open_stream_screenshot`、`stream_screenshot_timeout` 和 `stream_screenshot_width`。
+6. 新增 `service_port` 和 `public_url`，用于统一服务端口和公网地址配置。
+7. 新增运行状态持久化及状态 API，便于外部调用方判断更新是否完成、失败或取消。
+8. 日志接口支持 JSON Lines 格式。
+9. 改进 M3U、TXT 和压缩结果文件的独立访问与下载。
+
+### 🐛 修复
+
+1. 修复临时测速失败导致已有频道结果数量减少的问题。
+2. 修复 EPG 节目时间在处理过程中丢失时区的问题。
+3. 修复部分 M3U8 地址无法正常进行 IPv6 测速的问题。
+4. 修复部分频道结果质量判断不一致的问题。
+5. 修复部分结果文件无法独立下载的问题。
+6. 修复重复启动服务时产生重复日志的问题。
+7. 修复 RTMP 推流资源未及时清理的问题。
+8. 修复受限 Docker 环境中的 Nginx PID 文件和文件写入问题。
+
+### ⚙️ 配置变更
+
+- Python 最低版本升级至 3.14。
+- `pipenv run ui` 启动新的 PySide6 桌面版。
+- 旧版界面暂时通过 `pipenv run legacy_ui` 启动。
+- `urls_limit` 保留兼容，新的配置建议使用 `output_urls_limit`。
+- 新增测速模式、快速测速目标和播放截图相关配置。
+- 新增 `service_port` 和 `public_url`。
+- `open_subscribe_logo`、`open_headers` 默认开启；`open_subscribe_epg` 默认关闭，并增加流式解析与资源限制。
+- `open_auto_disable_source` 默认关闭。
+- `speed_test_limit = 0` 表示由性能模式自动决定测速并发。
+
+### 🆙 升级建议
+
+1. 使用 Python 3.14 重新创建 Pipenv 环境。
+2. 对照新版配置文件合并新增配置项。
+3. 检查 EPG、台标、请求头和自动停用源等默认开关。
+4. Docker 用户检查端口映射及公网地址配置。
+5. 使用播放截图功能时，确认系统已安装 FFmpeg。
+
+<details>
+  <summary>English</summary>
+
+### 2026/8/7
+
+> [!IMPORTANT]
+> 1. Python 3.14 is required.
+> 2. A new PySide6 desktop application is available for Windows and macOS.
+> 3. The legacy Tkinter interface is deprecated and retained temporarily for compatibility.
+> 4. Some configuration defaults and options have changed. Review `config/config.ini` after upgrading.
+
+### 🌟 New Desktop Application
+
+- Dashboard with update progress, runtime status, and result statistics.
+- Channel management with categories, search, playback, retesting, and batch actions.
+- Source management for subscriptions, EPG, local sources, whitelists, blacklists, and aliases.
+- Import and export channel templates, playback sources, and diagnostic data.
+- Batch import local source files with preview, duplicate detection, and invalid-record filtering.
+- Playback screenshot preview and batch refresh, with optional automatic capture during updates.
+- Open channels in a browser or a configured external player.
+- RTMP streaming monitoring and controls.
+- Task history, runtime logs, log export, and changelog viewing.
+- Chinese and English interfaces and system-tray operation.
+
+### 🚀 New Features
+
+1. Added `performance_mode` with automatic, power-saving, balanced, and fast modes.
+2. Added `speed_test_mode` with quick, full, and manual modes.
+3. Added `output_urls_limit` to control the final number of exported interfaces per channel.
+4. Added quick-test target settings to stop testing a channel after enough valid results are found.
+5. Added playback screenshot settings: `open_stream_screenshot`, `stream_screenshot_timeout`, and `stream_screenshot_width`.
+6. Added `service_port` and `public_url` for unified service and public-address configuration.
+7. Added persisted update states and status APIs for completed, failed, and cancelled runs.
+8. Log endpoints now support JSON Lines output.
+9. Improved independent access to M3U, TXT, and compressed result files.
+
+### 🐛 Fixes
+
+1. Fixed existing channel results shrinking after transient speed-test failures.
+2. Fixed time zones being lost from EPG programme times.
+3. Fixed some M3U8 addresses failing IPv6 speed tests.
+4. Fixed inconsistent channel-result quality checks.
+5. Fixed independent downloads for some result files.
+6. Fixed duplicate service-startup log entries.
+7. Fixed RTMP resources not being cleaned up promptly.
+8. Fixed Nginx PID-file and file-write issues in restricted Docker environments.
+
+### ⚙️ Configuration Changes
+
+- Python 3.14 is now the minimum supported version.
+- `pipenv run ui` starts the new PySide6 desktop application.
+- The legacy interface is temporarily available through `pipenv run legacy_ui`.
+- `urls_limit` remains compatible; new configurations should use `output_urls_limit`.
+- Added speed-test mode, quick-test target, and playback screenshot settings.
+- Added `service_port` and `public_url`.
+- `open_subscribe_logo` and `open_headers` are enabled by default; `open_subscribe_epg` is disabled by default and now uses streaming parsing with resource limits.
+- `open_auto_disable_source` is disabled by default.
+- `speed_test_limit = 0` lets the performance mode choose concurrency automatically.
+
+### 🆙 Upgrade Notes
+
+1. Recreate the Pipenv environment with Python 3.14.
+2. Merge the new options into the local configuration.
+3. Review the EPG, logo, request-header, and automatic-source-disable defaults.
+4. Check Docker port mappings and public-address settings.
+5. Install FFmpeg if playback screenshots are enabled.
+
+</details>
+
+## v2.0.8
+
+### 2026/7/7
+
+### 🚀 新增功能
+
+1. 订阅源 EPG 自动补充：新增 `open_subscribe_epg`，支持从 M3U 头部 `url-tvg` / `x-tvg-url` 自动发现 EPG 地址并合并到 EPG 获取流程，已配置的 `config/epg.txt` 仍保持优先级（#1301）。
+2. 订阅源台标优先：新增 `open_subscribe_logo`，生成 M3U 结果时可优先使用订阅源中自带的 `tvg-logo`，未提供时再回退到台标库（#1301）。
+3. 多 CDN 回退：`cdn_url` 支持配置多个地址（英文逗号分隔），订阅源和 EPG 拉取 GitHub Raw 内容时会按顺序回退，任一镜像成功即使用该结果；台标等静态资源继续使用第一个地址（#1275）。
+4. 全局与订阅源 UA 增强：新增 `user_agent` 全局配置；订阅源中配置的 UA 现在可继续用于测速和 M3U 结果输出，优先级为接口自带 UA > 订阅地址 UA > 全局 UA > 内置默认 UA（#1372，#1380）。
+5. 结果排序策略：新增 `sort_by`，支持按 `speed`、`delay`、`resolution` 组合控制频道内接口排序（#1372）。
+6. Docker IPv6 监听：容器环境检测到 IPv6 支持时，Nginx 会自动增加 IPv6 HTTP 监听，改善仅 IPv6 公网环境访问体验（#1370）。
+7. 广告/占位源过滤：新增 `open_filter_ad`，测速阶段可识别并过滤无信号、广告、短循环占位等 HLS 源。
+
+### 🐛 优化与修复
+
+1. 优化 `open_supply` 补偿机制：当接口不匹配 `location` / `isp` 偏好但仍可用时，可降权排到频道结果末尾作为补充，避免直接丢弃导致结果不足（#1372）。
+2. 修复部分 RTP 接口无法测速、无法获取分辨率等信息的问题（#1384）。
+3. 更新 IP 归属库，提高归属地与运营商识别准确性。
+4. 升级 `requests`、`aiohttp`、`urllib3`、`pillow` 等依赖版本，修复安全公告中的风险项。
+5. 补充 AGPL-3.0 使用说明、赞助信息与相关文档内容，并优化 README 中的 Star History 展示。
+
+### 🤝 鸣谢
+
+感谢 [IPWO](https://www.ipwo.net/?ref=githubGuovin) 对本项目的赞助支持。IPWO 提供稳定的住宅代理网络，适用于公开数据采集、接口调试、自动化测试与多地区访问验证等合规场景，支持 HTTP / HTTPS / SOCKS5，优惠码：`0105`。请在合法授权并遵守目标站点条款的前提下使用。
+
+### ⚙️ 配置项说明（新增 / 重点变更）
+
+- `open_subscribe_epg`：是否从订阅源 M3U 中自动提取 EPG 地址。
+- `open_subscribe_logo`：是否优先使用订阅源 M3U 中的 `tvg-logo`。
+- `cdn_url`：支持多个 CDN 地址，使用英文逗号分隔。
+- `user_agent`：全局请求 UA，用于订阅源拉取、测速和 M3U 结果输出。
+- `sort_by`：频道结果排序维度，支持 `speed`、`delay`、`resolution`。
+- `open_filter_ad`：是否开启广告/占位源过滤。
+
+### 🆙 升级建议
+
+1. 更新后请同步 `config/config.ini`，或将新增配置合并到 `config/user_config.ini`。
+2. 如果需要沿用订阅源内置 EPG 或台标，请手动开启 `open_subscribe_epg` / `open_subscribe_logo`。
+3. 如果使用 Docker 且公网只有 IPv6，请确认宿主机、容器网络与防火墙均已放行 IPv6 访问。
+
+<details>
+  <summary>English</summary>
+
+### 2026/7/7
+
+### 🚀 New Features
+
+1. Subscription EPG discovery: Added `open_subscribe_epg` to discover EPG URLs from M3U `url-tvg` / `x-tvg-url` headers and merge them into the EPG fetch flow, while configured `config/epg.txt` entries still take priority (#1301).
+2. Subscription logo priority: Added `open_subscribe_logo` so generated M3U results can prefer `tvg-logo` from subscription sources and fall back to the logo library only when missing (#1301).
+3. Multiple CDN fallback: `cdn_url` now supports multiple comma-separated URLs. Subscription and EPG fetches for GitHub Raw content fall back through them in order until one succeeds; static resources such as logos continue to use the first URL (#1275).
+4. Global and per-source UA improvements: Added global `user_agent`; UA configured on subscription entries can now be used for speed testing and M3U output as well. Priority: interface UA > subscription URL UA > global UA > built-in default UA (#1372, #1380).
+5. Result sorting strategy: Added `sort_by` to sort channel interfaces by combinations of `speed`, `delay`, and `resolution` (#1372).
+6. Docker IPv6 listen: When IPv6 support is detected in the container environment, Nginx automatically adds an IPv6 HTTP listener for IPv6-only public access scenarios (#1370).
+7. Ad / placeholder source filtering: Added `open_filter_ad` to identify and filter no-signal, advertisement, and short-loop placeholder HLS sources during speed testing.
+
+### 🐛 Optimizations & Fixes
+
+1. Improved the `open_supply` compensation mechanism: interfaces that do not match `location` / `isp` preferences but are still usable can be downranked to the end of channel results instead of being dropped directly (#1372).
+2. Fixed an issue where some RTP interfaces could not be speed-tested or have metadata such as resolution detected (#1384).
+3. Updated the IP attribution database to improve location and ISP matching accuracy.
+4. Upgraded dependencies including `requests`, `aiohttp`, `urllib3`, and `pillow` to address security advisories.
+5. Added AGPL-3.0 usage clarification, sponsor information, related documentation updates, and improved the Star History display in README files.
+
+### 🤝 Acknowledgements
+
+Thanks to [IPWO](https://www.ipwo.net/?ref=githubGuovin) for sponsoring this project. IPWO provides a stable residential proxy network for compliant scenarios such as public data collection, API debugging, automated testing, and multi-region access verification. It supports HTTP / HTTPS / SOCKS5. Coupon code: `0105`. Use it only with lawful authorization and in compliance with target site terms.
+
+### ⚙️ Configuration Items (new / important changes)
+
+- `open_subscribe_epg`: Extract EPG URLs from subscription M3U files automatically.
+- `open_subscribe_logo`: Prefer `tvg-logo` from subscription M3U files.
+- `cdn_url`: Supports multiple CDN URLs separated by commas.
+- `user_agent`: Global request UA for subscription fetching, speed testing, and M3U output.
+- `sort_by`: Channel result sorting dimensions; supports `speed`, `delay`, and `resolution`.
+- `open_filter_ad`: Enable ad / placeholder source filtering.
+
+### 🆙 Upgrade Recommendations
+
+1. After updating, synchronize `config/config.ini` or merge the new settings into `config/user_config.ini`.
+2. Enable `open_subscribe_epg` / `open_subscribe_logo` manually if you want to reuse EPG or logo information embedded in subscription sources.
+3. If Docker is used in an IPv6-only public network, verify that the host, container network, and firewall all allow IPv6 access.
+
+</details>
+
+## v2.0.1
+
+### 2026/3/11
+
+### 🚀 新增功能
+
+1. 推流模块：支持在推流时自动切换编码器进行转码，以提升兼容性与成功率。
+2. 订阅源/EPG 请求头：支持为订阅源或 EPG 请求设置 User-Agent（UA）或其他验证信息。
+3. 保留原始订阅数据：支持将订阅源的原始接口数据保留到 `output/log/subscribe` 目录，便于排查与二次处理。
+4. 源信息采集：支持获取并记录源的帧率、视频/音频编解码器等信息，并输出到日志以便诊断。
+5. 文档与示例：新增 Docker 下使用推流的详细教程。
+6. 默认 EPG：增加默认的 EPG 订阅以提升开箱体验。
+
+### 🐛 优化与修复
+
+1. 降低推流模块 CPU 占用，优化转码效率与兼容性。
+2. 修复本地源推流结果的输出路径错误。
+3. 修复无法处理属性为空的 M3U 订阅源时导致无结果的问题。
+4. 优化对 GitHub 订阅源的访问与自动内容转换逻辑，提升稳定性。
+5. 修复 GUI 中运行进度的国际化显示问题。
+
+<details>
+  <summary>English</summary>
+
+### 2026/3/11
+
+### 🚀 New Features
+
+1. Streaming: Support automatic encoder switching during push streaming for on-the-fly transcoding, improving
+   compatibility and success rates.
+2. Subscription/EPG request headers: Allow setting User-Agent (UA) and other verification headers for subscription or
+   EPG requests.
+3. Preserve raw subscription data: Optionally retain original subscription interface data under `output/log/subscribe`
+   for troubleshooting and secondary processing.
+4. Source metadata collection: Collect and log source properties such as frame rate, video codec and audio codec for
+   diagnostics.
+5. Docs & examples: Added a detailed Docker guide for using push streaming.
+6. Default EPG: Added a default EPG subscription to improve out-of-the-box experience.
+
+### 🐛 Optimizations & Fixes
+
+1. Reduced CPU usage in the streaming module; improved transcoding efficiency and compatibility.
+2. Fixed incorrect output path for local-source streaming results.
+3. Fixed issue where M3U subscription sources with empty attributes could not be processed.
+4. Improved access and automatic content normalization for GitHub-based subscription sources.
+5. Fixed localization/internationalization issue in GUI runtime progress display.
+
+</details>
+
 ## v2.0.0
 
 <div align="center">
@@ -30,14 +299,17 @@
 - 新增 HTTP 代理配置（`http_proxy`），增强在受限网络环境下的获取能力。
 - 支持识别并过滤过期/无效的 EPG 数据，提高 EPG 质量。
 - 支持语言切换（`language`），可选 `zh_CN` / `en`，界面与实时日志可切换语言输出。
+- 新增M3U`tvg-id`以适配更多播放器合并频道源。
 
 ### 🐛 优化与修复
 
+- 优化降低程序运行时的内存占用。
 - 优化 CCTV 类频道别名匹配与 4K 频道识别（匹配规则改进）。
 - 优化推流首播体验、转码兼容性与 Docker 推流监控。
 - 优化接口冻结流程，智能管理与解冻判断。
 - 更新 IP 归属库与运营商数据，提高归属地过滤准确性。
 - 若干测速与过滤逻辑优化，减少误判与提升效率。
+- 调整Docker日志实时无缓冲输出。
 
 ### ⚙️ 配置项说明（新增 / 重点变更）
 
@@ -97,14 +369,17 @@
 - Added HTTP proxy configuration (`http_proxy`) to improve fetching in restricted network environments.
 - Support identification and filtering of expired/invalid EPG data to improve EPG quality.
 - Support language switching (`language`), optional `zh_CN` / `en`, enabling UI and real-time log language switching.
+- Added M3U `tvg-id` to support merging channel sources in more players.
 
 ### 🐛 Optimizations & fixes
 
+- Optimized to reduce the memory usage during program runtime.
 - Improved alias matching for CCTV-type channels and 4K channel recognition (matching rules refined).
 - Improved first-play streaming experience, transcoding compatibility, and Docker streaming monitoring.
 - Optimized interface freezing process with smarter management and unfreeze judgment.
 - Updated IP attribution and carrier data to improve accuracy of location-based filtering.
 - Several speed test and filtering logic optimizations to reduce false positives and improve efficiency.
+- Adjust Docker logs to output in real-time without buffering.
 
 ### ⚙️ Configuration items (new / important changes)
 
